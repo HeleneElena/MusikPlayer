@@ -1,0 +1,32 @@
+.player {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: -100%;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(6px);
+    border-radius: 20px;
+    max-width: 1228px;
+    margin: 0 auto;
+    transition: bottom .5s ease;
+    padding: 24px;
+} 
+
+.player_active {
+    bottom: 26px;
+}
+
+.player__track-info {
+
+}
+.player__controlle {
+
+}
+
+.player__container {
+    display: grid;
+    grid-template-columns: 1f;
+}
+
+.player__icon 
+.player__progress
