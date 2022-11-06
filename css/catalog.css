@@ -26,6 +26,12 @@
     grid-column: -2/-1;
 }
 
+@media (max-width: 1024px) {
+    .catalog__container {
+        padding: 0 14px;
+    }
+}
+
 @media (max-width: 560px) {
     .catalog__container {
         grid-template-columns: repeat(auto-fill, 148px);
@@ -37,5 +43,6 @@
         padding-top: 12px;
         padding-bottom: 12px;
         font-size: 14px;
+        gap: 4px;
     }
 }
