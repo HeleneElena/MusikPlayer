@@ -1,6 +1,7 @@
 const audio = new Audio();
 const tracksCard = document.getElementsByClassName('track');
 const pauseBtn = document.querySelector('.player__icon_pause');
+const catalogContainer = document.querySelector('.catalog__container');
 const stopBtn = document.querySelector('.player__icon_stop');
 const player = document.querySelector('.player');
 
@@ -105,9 +106,11 @@ const playMusic = e => {
     trackActive.classList.add('track_active');
 };
 
-for (let i = 0; i <= tracksCard.length; i++) {
+const addHandlerTrack = () => {
+  for (let i = 0; i < tracksCard.length; i++) {
     tracksCard[i].addEventListener('click', playMusic);
-}
+  }
+};
 
 pauseBtn.addEventListener('click', () => {
     if (audio.paused) {
@@ -122,3 +125,32 @@ pauseBtn.addEventListener('click', () => {
 stopBtn.addEventListener('click', () => {
 
 });
+
+const createCard = (data) => {
+  const a = document.createElement('a');
+  a.classList.add("catalog__item", "track");
+  a.dataset.idTrack = data.id;
+  a.innerHTML = `
+    <div class="track__img-wrap">
+        <img class="track__poster" src="${data.poster}" alt="${data.artist} ${data.track}" width="180" height="180">
+    </div>
+    <div class="track__info track-info">
+        <p class="track__title">${data.artist}</p>
+        <p class="track__artist">${data.track}</p>
+    </div>
+  `;
+  return a;
+};
+
+const renderCatalog = (dataList) => {
+  catalogContainer.textContent = '';
+  const listCards = dataList.map(createCard);
+  catalogContainer.append(...listCards);
+  addHandlerTrack();
+};
+
+const init = () => {
+  renderCatalog(dataMusic);
+};
+
+init();
