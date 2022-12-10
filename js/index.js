@@ -92,9 +92,32 @@ const dataMusic = [
   },
 ];
 
+const pausePlayer = () => {
+    const trackActive = document.querySelector('.track_active');
+
+    if (audio.paused) {
+        audio.play();
+        pauseBtn.classList.remove('.player__icon_play');
+        trackActive.classList.remove('track_pause');
+    } else {
+        audio.pause();
+        pauseBtn.classList.add('.player__icon_play');
+        trackActive.classList.add('track_pause');
+    }
+};
+
 const playMusic = e => {
+    e.preventDefault();
     const trackActive = e.currentTarget;
-    audio.src = trackActive.dataset.track;  // сохрани себе путь в url
+
+    if (trackActive.classList.contains('track_active')) {
+      pausePlayer(trackActive);
+    }
+
+    const id = trackActive.dataset.idTrack;
+    const track = dataMusic.find(item => id === item.id);
+    audio.src = track.mp3;  // сохрани себе путь в url
+
     audio.play(); // проиграй этот путь
     pauseBtn.classList.remove('player__icon_play');
     player.classList.add('player_active');
@@ -112,15 +135,7 @@ const addHandlerTrack = () => {
   }
 };
 
-pauseBtn.addEventListener('click', () => {
-    if (audio.paused) {
-        audio.play();
-        pauseBtn.classList.remove('.player__icon_play');
-    } else {
-        audio.pause();
-        pauseBtn.classList.add('.player__icon_play');
-    }
-});
+pauseBtn.addEventListener('click', pausePlayer);
 
 stopBtn.addEventListener('click', () => {
 
@@ -128,6 +143,7 @@ stopBtn.addEventListener('click', () => {
 
 const createCard = (data) => {
   const a = document.createElement('a');
+  a.href = '#';
   a.classList.add("catalog__item", "track");
   a.dataset.idTrack = data.id;
   a.innerHTML = `
