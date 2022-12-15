@@ -8,6 +8,7 @@ const nextBtn = document.querySelector('.player__icon_next');
 const likeBtn = document.querySelector('.player__icon_like');
 const muteBtn = document.querySelector('.player__icon_mute');
 const player = document.querySelector('.player');
+const playerPprogress = document.querySelector('.player__progress-input');
 
 
 const catalogAddBtn = document.createElement('button');
@@ -200,6 +201,10 @@ const checkCount = (i = 1) => {
   }
 };
 
+const updateTime = () => {
+  console.log(audio.currentTime);
+};
+
 const init = () => {
   renderCatalog(dataMusic);
   checkCount();
@@ -213,6 +218,11 @@ const init = () => {
 
   prevBtn.addEventListener('click', playMusic);
   nextBtn.addEventListener('click', playMusic);
+  audio.addEventListener('timeupdate', updateTime);
+  playerPprogress.addEventListener('change', () => {
+    const progress = playerPprogress.value;
+    audio.currentTime = (progress / 100) * audio.duration;
+  })
 };
 
 init();
