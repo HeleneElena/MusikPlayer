@@ -1,3 +1,5 @@
+const API_URL = "http://localhost:3024/";
+
 const audio = new Audio();
 const tracksCard = document.getElementsByClassName('track');
 const pauseBtn = document.querySelector('.player__icon_pause');
@@ -14,6 +16,7 @@ const playerTimePassed = document.querySelector('.player__time-passed');
 const playerTimeTotal = document.querySelector('.player__time-total');
 const logo = document.querySelector('.header__logo');
 const playerVolumeInput = document.querySelector('.player__volume-input');
+const search = document.querySelector('.search');
 
 const catalogAddBtn = document.createElement('button');
 catalogAddBtn.classList.add('catalog__btn-add');
@@ -24,92 +27,7 @@ catalogAddBtn.classList.add('catalog__btn-add');
     </svg>     
   `;
 
-const dataMusic = [
-  {
-    id: '1',
-    artist: 'The weeknd',
-    track: 'Save your tears',
-    poster: 'img/photo1.jpg',
-    mp3: 'audio/The Weeknd - Save Your Tears.mp3',
-  },
-  {
-    id: '2',
-    artist: 'Imagine Dragons',
-    track: 'Follow You',
-    poster: 'img/photo2.jpg',
-    mp3: 'audio/Imagine Dragons - Follow You.mp3',
-  },
-  {
-    id: '3',
-    artist: 'Tove Lo',
-    track: 'How Long',
-    poster: 'img/photo3.jpg',
-    mp3: 'audio/Tove Lo - How Long.mp3',
-  },
-  {
-    id: '4',
-    artist: 'Tom Odell',
-    track: 'Another Love',
-    poster: 'img/photo4.jpg',
-    mp3: 'audio/Tom Odell - Another Love.mp3',
-  },
-  {
-    id: '5',
-    artist: 'Lana Del Rey',
-    track: 'Born To Die',
-    poster: 'img/photo5.jpg',
-    mp3: 'audio/Lana Del Rey - Born To Die.mp3',
-  },
-  {
-    id: '6',
-    artist: 'Adele',
-    track: 'Hello',
-    poster: 'img/photo6.jpg',
-    mp3: 'audio/Adele - Hello.mp3',
-  },
-  {
-    id: '7',
-    artist: 'Tom Odell',
-    track: "Can't Pretend",
-    poster: 'img/photo7.jpg',
-    mp3: "audio/Tom Odell - Can't Pretend.mp3",
-  },
-  {
-    id: '8',
-    artist: 'Lana Del Rey',
-    track: 'Young And Beautiful',
-    poster: 'img/photo8.jpg',
-    mp3: 'audio/Lana Del Rey - Young And Beautiful.mp3',
-  },
-  {
-    id: '9',
-    artist: 'Adele',
-    track: 'Someone Like You',
-    poster: 'img/photo9.jpg',
-    mp3: 'audio/Adele - Someone Like You.mp3',
-  },
-  {
-    id: '10',
-    artist: 'Imagine Dragons',
-    track: 'Natural',
-    poster: 'img/photo10.jpg',
-    mp3: 'audio/Imagine Dragons - Natural.mp3',
-  },
-  {
-    id: '11',
-    artist: 'Drake',
-    track: 'Laugh Now Cry Later',
-    poster: 'img/photo11.jpg',
-    mp3: 'audio/Drake - Laugh Now Cry Later.mp3',
-  },
-  {
-    id: '12',
-    artist: 'Madonna',
-    track: 'Frozen',
-    poster: 'img/photo12.jpg',
-    mp3: 'audio/Madonna - Frozen.mp3',
-  },
-];
+let dataMusic = [];
 
 let playlist = [];
 
@@ -155,11 +73,12 @@ const playMusic = e => {
       i = index;
       return id === item.id;
     });
-    audio.src = track.mp3;  // сохрани себе путь в url
+    audio.src = `${API_URL}${track.mp3}`;  // сохрани себе путь в url
 
     audio.play(); // проиграй этот путь
     pauseBtn.classList.remove('player__icon_play');
     player.classList.add('player_active');
+    player.dataset.idTrack = id;
 
     const prevTrack = i === 0 ? playlist.length - 1 : i - 1;
     const nextTrack = i + 1 === playlist.length ? 0 : i + 1;
@@ -198,10 +117,18 @@ const createCard = (data) => {
   const a = document.createElement('a');
   a.href = '#';
   a.classList.add("catalog__item", "track");
+
+  if (player.dataset.idTrack === data.id) {
+    a.classList.add("track_active");
+    if (audio.paused) {
+      a.classList.add("track_pause");
+    }
+  }
+
   a.dataset.idTrack = data.id;
   a.innerHTML = `
     <div class="track__img-wrap">
-        <img class="track__poster" src="${data.poster}" alt="${data.artist} ${data.track}" width="180" height="180">
+        <img class="track__poster" src="${API_URL}${data.poster}" alt="${data.artist} ${data.track}" width="180" height="180">
     </div>
     <div class="track__info track-info">
         <p class="track__title">${data.artist}</p>
@@ -244,9 +171,11 @@ const updateTime = () => {
   playerTimeTotal.textContent = `${minuteDuration}:${secondDuration < 10 ? '0' + secondDuration : secondDuration}`;
 };
 
-const init = () => {
+const init = async () => {
   audio.volume = localStorage.getItem('volume') || 1;
   playerVolumeInput.value = audio.volume * 100;
+
+  dataMusic = await fetch(`${API_URL}api/music`).then(data => data.json());
 
   renderCatalog(dataMusic);
   checkCount();
@@ -314,6 +243,14 @@ const init = () => {
     }
   });
 
+  search.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    playList = await fetch(`${API_URL}api/music?search=${search.search.value}`).then(data => data.json());
+
+    renderCatalog(playList);
+    checkCount();
+
+  });
 };
 
 init();
